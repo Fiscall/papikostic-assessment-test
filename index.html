@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,11 +21,49 @@
         <section class="hero">
           <h1>Papikostik Assessment Test</h1>
           <p>
-            Discover your dominant personality profile through a short, free online assessment.
+            Discover your dominant personality profile through a short online assessment.
           </p>
         </section>
 
-        <form id="quizForm" class="quiz-form">
+        <!-- STEP 1: FORM DATA DIRI KANDIDAT -->
+        <section id="identitySection" class="identity-section">
+          <h2>Data Diri Peserta</h2>
+          <form id="identityForm">
+            <div class="form-group">
+              <label for="fullName">Nama Lengkap *</label>
+              <input type="text" id="fullName" name="fullName" placeholder="Masukkan nama lengkap" required />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Alamat Email *</label>
+              <input type="email" id="email" name="email" placeholder="contoh@email.com" required />
+            </div>
+
+            <div class="form-group">
+              <label for="phone">No. HP / WhatsApp *</label>
+              <input type="tel" id="phone" name="phone" placeholder="081234567890" required />
+            </div>
+
+            <div class="form-group">
+              <label for="gender">Jenis Kelamin *</label>
+              <select id="gender" name="gender" required>
+                <option value="" disabled selected>Pilih Jenis Kelamin</option>
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="position">Posisi yang Dilamar *</label>
+              <input type="text" id="position" name="position" placeholder="Contoh: HR Specialist / Staff Admin" required />
+            </div>
+
+            <button type="submit" class="submit-btn">Mulai Tes Psikotes</button>
+          </form>
+        </section>
+
+        <!-- STEP 2: FORM SOAL PSIKOTES (Hidden secara default via class/style) -->
+        <form id="quizForm" class="quiz-form hidden">
           <div class="question" data-type="A">
             <p>1. I enjoy taking initiative when something important needs to be done.</p>
             <div class="answers">
