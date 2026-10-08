@@ -1,23 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const descriptions = {
-    A: {
-      title: 'Leadership / Action Type',
-      text: 'Anda adalah pribadi yang berorientasi pada tindakan, memiliki rasa percaya diri tinggi, dan berfokus pada hasil. Anda sigap mengambil inisiatif dan mendorong pencapaian target secara efektif.'
-    },
-    B: {
-      title: 'Influence / Social Type',
-      text: 'Anda adalah pribadi yang ramah, komunikatif, dan menyukai interaksi sosial. Anda pandai memotivasi orang lain, membangun relasi, serta berkembang dalam lingkungan kerja kolaboratif.'
-    },
-    C: {
-      title: 'Stability / Support Type',
-      text: 'Anda adalah pribadi yang tenang, dapat diandalkan, dan menghargai keharmonisan. Anda menyukai stabilitas, konsistensi jangka panjang, serta lingkungan kerja yang terstruktur.'
-    },
-    D: {
-      title: 'Analytical / Structure Type',
-      text: 'Anda adalah pribadi yang cermat, teliti, dan berpikir logis. Anda menyukai akurasi data, detail pekerjaan, serta pengambilan keputusan berdasarkan fakta yang terencana.'
-    }
-  };
-
   const identitySection = document.getElementById('identitySection');
   const identityForm = document.getElementById('identityForm');
   const quizForm = document.getElementById('quizForm');
@@ -27,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   let candidateData = {};
   let timerInterval = null;
-  const TOTAL_TIME_SECONDS = 30 * 60; // 30 Menit (1800 detik)
+  const TOTAL_TIME_SECONDS = 30 * 60; // 30 Menit
   let timeRemaining = TOTAL_TIME_SECONDS;
 
   // STEP 1: Submit Form Data Diri & Mulai Timer
@@ -47,12 +28,10 @@ document.addEventListener('DOMContentLoaded', function () {
     quizForm.classList.remove('hidden');
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // Jalankan Timer 30 Menit
     startTimer();
   });
 
-  // Fungsi Penghitung Waktu Mundur
+  // Fungsi Timer
   function startTimer() {
     updateTimerDisplay();
 
@@ -63,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (timeRemaining <= 0) {
         clearInterval(timerInterval);
         alert("Waktu pengerjaan (30 menit) telah habis. Jawaban Anda akan otomatis dikirim.");
-        processQuizSubmission(true); // Kirim otomatis
+        processQuizSubmission(true);
       }
     }, 1000);
   }
@@ -73,76 +52,144 @@ document.addEventListener('DOMContentLoaded', function () {
     const seconds = timeRemaining % 60;
     timerDisplay.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
-    // Beri penanda warna merah jika sisa waktu kurang dari 5 menit
     if (timeRemaining <= 300) {
       timerBar.classList.add('warning');
     }
   }
 
-  // STEP 2: Submit Form Manual oleh Peserta
+  // STEP 2: Submit Form Manual
   quizForm.addEventListener('submit', function (event) {
     event.preventDefault();
-    clearInterval(timerInterval); // Hentikan timer
+    clearInterval(timerInterval);
     processQuizSubmission(false);
   });
 
-  // Fungsi Pengolahan Skor & Jawaban Seadanya
+  // STEP 3: Kalkulasi 20 Aspek PAPI Kostick
   function processQuizSubmission(isTimeOut) {
-    const scores = { A: 0, B: 0, C: 0, D: 0 };
+    // Inisialisasi 20 Aspek PAPI Kostick (0-9 Scale)
+    const papiScores = {
+      // Role / Peran
+      G: 0, L: 0, I: 0, T: 0, V: 0, S: 0, R: 0, D: 0, C: 0, E: 0,
+      // Need / Kebutuhan
+      N: 0, A: 0, P: 0, X: 0, B: 0, O: 0, Z: 0, K: 0, F: 0, W: 0
+    };
+
     const questions = quizForm.querySelectorAll('.question');
     let answeredCount = 0;
 
-    // Lepas penanda 'required' pada radio button jika submit karena timeout
     if (isTimeOut) {
       const radioInputs = quizForm.querySelectorAll('input[type="radio"]');
       radioInputs.forEach(input => input.removeAttribute('required'));
     }
 
-    questions.forEach((question) => {
-      const type = question.dataset.type;
+    // Pemetaan Jawaban ke Aspek PAPI Kostick
+    questions.forEach((question, index) => {
       const selected = question.querySelector('input:checked');
 
-      if (selected && scores.hasOwnProperty(type)) {
-        scores[type] += Number(selected.value);
+      if (selected) {
         answeredCount++;
+        const val = Number(selected.value);
+        const qNum = index + 1;
+
+        // Distribusi Bobot Aspek berdasarkan nomor soal
+        if (val >= 4) {
+          // Aspek Peran (Role)
+          if (qNum % 10 === 1) papiScores.G++;
+          else if (qNum % 10 === 2) papiScores.L++;
+          else if (qNum % 10 === 3) papiScores.I++;
+          else if (qNum % 10 === 4) papiScores.T++;
+          else if (qNum % 10 === 5) papiScores.V++;
+          else if (qNum % 10 === 6) papiScores.S++;
+          else if (qNum % 10 === 7) papiScores.R++;
+          else if (qNum % 10 === 8) papiScores.D++;
+          else if (qNum % 10 === 9) papiScores.C++;
+          else papiScores.E++;
+        } else if (val <= 2) {
+          // Aspek Kebutuhan (Need)
+          if (qNum % 10 === 1) papiScores.N++;
+          else if (qNum % 10 === 2) papiScores.A++;
+          else if (qNum % 10 === 3) papiScores.P++;
+          else if (qNum % 10 === 4) papiScores.X++;
+          else if (qNum % 10 === 5) papiScores.B++;
+          else if (qNum % 10 === 6) papiScores.O++;
+          else if (qNum % 10 === 7) papiScores.Z++;
+          else if (qNum % 10 === 8) papiScores.K++;
+          else if (qNum % 10 === 9) papiScores.F++;
+          else papiScores.W++;
+        }
       }
     });
 
-    const dominantType = Object.keys(scores).sort((a, b) => scores[b] - scores[a])[0];
-    const profile = descriptions[dominantType];
+    // Total Skor Peran & Kebutuhan
+    const totalRole = papiScores.G + papiScores.L + papiScores.I + papiScores.T + papiScores.V + 
+                      papiScores.S + papiScores.R + papiScores.D + papiScores.C + papiScores.E;
 
-    // Sembunyikan Timer dan Form Soal
+    const totalNeed = papiScores.N + papiScores.A + papiScores.P + papiScores.X + papiScores.B + 
+                      papiScores.O + papiScores.Z + papiScores.K + papiScores.F + papiScores.W;
+
+    const grandTotal = totalRole + totalNeed;
+
+    // Sembunyikan Timer dan Form
     timerBar.classList.add('hidden');
     quizForm.classList.add('hidden');
 
-    // Tampilkan Hasil
+    // Tampilkan Hasil Assessment
     resultBox.classList.remove('hidden');
     resultBox.innerHTML = `
-      <h2>Hasil Assessment Papikostik</h2>
+      <h2>Hasil Assessment Psikotes PAPI Kostick</h2>
       ${isTimeOut ? '<p style="color:#b91c1c; font-weight:bold; background:#fee2e2; padding:10px; border-radius:6px;">⚠️ Waktu pengerjaan telah habis. Hasil di bawah berdasarkan jawaban yang berhasil terisi.</p>' : ''}
 
-      <div class="candidate-summary" style="background: #ffffff; border: 1px solid var(--success-border); padding: 18px; border-radius: 12px; margin-bottom: 20px;">
-        <h3 style="margin-top:0; color: var(--text); border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">Ringkasan Data Peserta</h3>
-        <p style="margin: 6px 0;"><strong>Nama Lengkap:</strong> ${candidateData.fullName}</p>
-        <p style="margin: 6px 0;"><strong>Email:</strong> ${candidateData.email}</p>
-        <p style="margin: 6px 0;"><strong>No. HP / WhatsApp:</strong> ${candidateData.phone}</p>
-        <p style="margin: 6px 0;"><strong>Jenis Kelamin:</strong> ${candidateData.gender}</p>
-        <p style="margin: 6px 0;"><strong>Posisi Dilamar:</strong> ${candidateData.position}</p>
-        <p style="margin: 6px 0;"><strong>Total Soal Terjawab:</strong> ${answeredCount} dari 90 Soal</p>
+      <div class="candidate-summary">
+        <h3>Data Peserta</h3>
+        <p><strong>Nama Lengkap:</strong> ${candidateData.fullName}</p>
+        <p><strong>Email:</strong> ${candidateData.email}</p>
+        <p><strong>No. HP / WhatsApp:</strong> ${candidateData.phone}</p>
+        <p><strong>Jenis Kelamin:</strong> ${candidateData.gender}</p>
+        <p><strong>Posisi Dilamar:</strong> ${candidateData.position}</p>
+        <p><strong>Total Soal Terjawab:</strong> ${answeredCount} dari 90 Soal</p>
       </div>
 
-      <div class="profile-result" style="background: #ffffff; border-left: 5px solid var(--primary); padding: 18px; border-radius: 12px;">
-        <h3 style="color: var(--primary); margin-top: 0;">${profile.title}</h3>
-        <p style="line-height: 1.6; color: #334155;">${profile.text}</p>
+      <div class="papi-results-container">
+        <h3>Profil Kepribadian PAPI Kostick</h3>
         
-        <div style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed #cbd5e1;">
-          <p style="margin: 0; font-weight: 700; color: #1e293b;">Rincian Skor Per Kategori:</p>
-          <div style="display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap;">
-            <span style="background: #f1f5f9; padding: 6px 12px; border-radius: 6px; font-weight: 600;">A (Action): ${scores.A}</span>
-            <span style="background: #f1f5f9; padding: 6px 12px; border-radius: 6px; font-weight: 600;">B (Social): ${scores.B}</span>
-            <span style="background: #f1f5f9; padding: 6px 12px; border-radius: 6px; font-weight: 600;">C (Support): ${scores.C}</span>
-            <span style="background: #f1f5f9; padding: 6px 12px; border-radius: 6px; font-weight: 600;">D (Structure): ${scores.D}</span>
+        <!-- BAGIAN PERAN (ROLE) -->
+        <div class="papi-group">
+          <h4>Skala Peran (Role) — Total Score: ${totalRole}</h4>
+          <div class="papi-grid">
+            <div class="papi-card"><span class="code">G</span><span class="score">${papiScores.G}</span><span class="label">Hard Work</span></div>
+            <div class="papi-card"><span class="code">L</span><span class="score">${papiScores.L}</span><span class="label">Leadership</span></div>
+            <div class="papi-card"><span class="code">I</span><span class="score">${papiScores.I}</span><span class="label">Decision Making</span></div>
+            <div class="papi-card"><span class="code">T</span><span class="score">${papiScores.T}</span><span class="label">Pace</span></div>
+            <div class="papi-card"><span class="code">V</span><span class="score">${papiScores.V}</span><span class="label">Vigorousness</span></div>
+            <div class="papi-card"><span class="code">S</span><span class="score">${papiScores.S}</span><span class="label">Social Extension</span></div>
+            <div class="papi-card"><span class="code">R</span><span class="score">${papiScores.R}</span><span class="label">Theoretical Type</span></div>
+            <div class="papi-card"><span class="code">D</span><span class="score">${papiScores.D}</span><span class="label">Detail Conscious</span></div>
+            <div class="papi-card"><span class="code">C</span><span class="score">${papiScores.C}</span><span class="label">Organized</span></div>
+            <div class="papi-card"><span class="code">E</span><span class="score">${papiScores.E}</span><span class="label">Emotional Control</span></div>
           </div>
+          <p class="summary-text">G: ${papiScores.G}, L: ${papiScores.L}, I: ${papiScores.I}, T: ${papiScores.T}, V: ${papiScores.V}, S: ${papiScores.S}, R: ${papiScores.R}, D: ${papiScores.D}, C: ${papiScores.C}, E: ${papiScores.E} <strong>(Total: ${totalRole})</strong></p>
+        </div>
+
+        <!-- BAGIAN KEBUTUHAN (NEED) -->
+        <div class="papi-group">
+          <h4>Skala Kebutuhan (Need) — Total Score: ${totalNeed}</h4>
+          <div class="papi-grid">
+            <div class="papi-card"><span class="code">N</span><span class="score">${papiScores.N}</span><span class="label">Need to Finish</span></div>
+            <div class="papi-card"><span class="code">A</span><span class="score">${papiScores.A}</span><span class="label">Need to Achieve</span></div>
+            <div class="papi-card"><span class="code">P</span><span class="score">${papiScores.P}</span><span class="label">Need to Control</span></div>
+            <div class="papi-card"><span class="code">X</span><span class="score">${papiScores.X}</span><span class="label">Need to be Noticed</span></div>
+            <div class="papi-card"><span class="code">B</span><span class="score">${papiScores.B}</span><span class="label">Need to Belong</span></div>
+            <div class="papi-card"><span class="code">O</span><span class="score">${papiScores.O}</span><span class="label">Need for Affection</span></div>
+            <div class="papi-card"><span class="code">Z</span><span class="score">${papiScores.Z}</span><span class="label">Need for Change</span></div>
+            <div class="papi-card"><span class="code">K</span><span class="score">${papiScores.K}</span><span class="label">Need to be Forceful</span></div>
+            <div class="papi-card"><span class="code">F</span><span class="score">${papiScores.F}</span><span class="label">Need to Follow</span></div>
+            <div class="papi-card"><span class="code">W</span><span class="score">${papiScores.W}</span><span class="label">Need for Rules</span></div>
+          </div>
+          <p class="summary-text">N: ${papiScores.N}, A: ${papiScores.A}, P: ${papiScores.P}, X: ${papiScores.X}, B: ${papiScores.B}, O: ${papiScores.O}, Z: ${papiScores.Z}, K: ${papiScores.K}, F: ${papiScores.F}, W: ${papiScores.W} <strong>(Total: ${totalNeed})</strong></p>
+        </div>
+
+        <div class="grand-total-box">
+          <strong>TOTAL SKOR KESELURUHAN (ROLE + NEED): ${grandTotal} / 90</strong>
         </div>
       </div>
     `;
