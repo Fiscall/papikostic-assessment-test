@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function initProgressTracker() {
     if (!quizForm) return;
-    
+
     // Listen perubahan pilihan radio button
     quizForm.addEventListener('change', function () {
       const answeredQuestions = quizForm.querySelectorAll('.question-card input[type="radio"]:checked').length;
@@ -175,13 +175,22 @@ document.addEventListener('DOMContentLoaded', function () {
     if (quizHeader) quizHeader.classList.add('hidden');
     if (quizForm) quizForm.classList.add('hidden');
 
-    // Render Tampilan Dashboard Hasil Assessment
+    // Render Tampilan Dashboard Hasil Assessment & Pesan Penutup
     if (resultBox) {
       resultBox.classList.remove('hidden');
       resultBox.innerHTML = `
-        <div style="border-bottom: 2px solid var(--border-color); padding-bottom: 12px; margin-bottom: 20px;">
-          <h2 style="margin: 0; color: var(--primary);">Hasil Assessment Psikotes PAPI Kostick</h2>
-          <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 0.95rem;">Laporan Hasil Evaluasi Mandiri Peserta</p>
+        <!-- PESAN PENUTUP & INFORMASI KANDIDAT -->
+        <div class="completion-banner">
+          <h2>🎉 Tes Asesmen Selesai!</h2>
+          <p>Terima kasih telah menyelesaikan Asesmen Kepribadian PAPI Kostick.</p>
+          <div class="completion-info">
+            <p><strong>Informasi Penting untuk Peserta:</strong></p>
+            <ul>
+              <li>Jawaban dan hasil tes Anda telah berhasil terekam dalam sistem rekrutmen kami.</li>
+              <li>Tim Talent Acquisition / HRD akan meninjau profil kepribadian ini bersama dengan kualifikasi berkas pendaftaran Anda.</li>
+              <li>Informasi kelanjutan proses seleksi akan dikirimkan melalui <strong>Email</strong> atau nomor <strong>WhatsApp</strong> resmi perusahaan.</li>
+            </ul>
+          </div>
         </div>
 
         ${isTimeOut ? '<div style="color:#b91c1c; font-weight:600; background:#fee2e2; border: 1px solid #fca5a5; padding:12px 16px; border-radius:8px; margin-bottom:20px;">⚠️ Waktu pengerjaan (30 menit) telah habis. Hasil di bawah dihitung berdasarkan jawaban yang berhasil tersubmit.</div>' : ''}
@@ -237,14 +246,89 @@ document.addEventListener('DOMContentLoaded', function () {
             <p class="summary-text">N: ${papiScores.N}, A: ${papiScores.A}, P: ${papiScores.P}, X: ${papiScores.X}, B: ${papiScores.B}, O: ${papiScores.O}, Z: ${papiScores.Z}, K: ${papiScores.K}, F: ${papiScores.F}, W: ${papiScores.W} <strong>(Total: ${totalNeed})</strong></p>
           </div>
 
-          <div class="grand-total-box">
+          <div class="grand-total-box" style="margin-bottom: 20px;">
             <strong>TOTAL SKOR KESELURUHAN (ROLE + NEED): ${grandTotal} / 90</strong>
+          </div>
+
+          <!-- TOMBOL UNDUH LAPORAN EXCEL / CSV -->
+          <div class="download-box">
+            <button id="downloadExcelBtn" class="download-btn">
+              📊 Download Laporan Hasil (Excel / CSV)
+            </button>
           </div>
         </div>
       `;
 
+      // Event listener tombol unduh laporan Excel
+      const downloadBtn = document.getElementById('downloadExcelBtn');
+      if (downloadBtn) {
+        downloadBtn.addEventListener('click', function () {
+          downloadReportAsCSV(candidateData, papiScores, totalRole, totalNeed, grandTotal, answeredCount);
+        });
+      }
+
       // Scroll mulus ke bagian hasil
       window.scrollTo({ top: resultBox.offsetTop - 20, behavior: 'smooth' });
     }
+  }
+
+  // =========================================================
+  // FUNGSI UTILITY: GENERATE & UNDUH FILE EXCEL (.CSV)
+  // =========================================================
+  function downloadReportAsCSV(candidate, scores, roleTotal, needTotal, grandTotal, answered) {
+    const csvRows = [
+      ["LAPORAN HASIL ASESMEN PSIKOTES PAPI KOSTICK"],
+      ["Tanggal Asesmen", new Date().toLocaleDateString('id-ID')],
+      [],
+      ["DATA PESERTA"],
+      ["Nama Lengkap", candidate.fullName || "-"],
+      ["Email", candidate.email || "-"],
+      ["No. HP / WA", candidate.phone || "-"],
+      ["Jenis Kelamin", candidate.gender || "-"],
+      ["Posisi Dilamar", candidate.position || "-"],
+      ["Soal Terjawab", `${answered} / 90 Soal`],
+      [],
+      ["SKOR SKALA PERAN (ROLE)"],
+      ["Kode Aspek", "Nama Aspek", "Skor (0-9)"],
+      ["G", "Hard Work", scores.G],
+      ["L", "Leadership", scores.L],
+      ["I", "Decision Making", scores.I],
+      ["T", "Pace", scores.T],
+      ["V", "Vigorousness", scores.V],
+      ["S", "Social Extension", scores.S],
+      ["R", "Theoretical Type", scores.R],
+      ["D", "Detail Conscious", scores.D],
+      ["C", "Organized", scores.C],
+      ["E", "Emotional Control", scores.E],
+      ["TOTAL SKALA PERAN", "", roleTotal],
+      [],
+      ["SKOR SKALA KEBUTUHAN (NEED)"],
+      ["Kode Aspek", "Nama Aspek", "Skor (0-9)"],
+      ["N", "Need to Finish", scores.N],
+      ["A", "Need to Achieve", scores.A],
+      ["P", "Need to Control", scores.P],
+      ["X", "Need to be Noticed", scores.X],
+      ["B", "Need to Belong", scores.B],
+      ["O", "Need for Affection", scores.O],
+      ["Z", "Need for Change", scores.Z],
+      ["K", "Need to be Forceful", scores.K],
+      ["F", "Need to Follow", scores.F],
+      ["W", "Need for Rules", scores.W],
+      ["TOTAL SKALA KEBUTUHAN", "", needTotal],
+      [],
+      ["TOTAL SKOR KESELURUHAN", "", grandTotal]
+    ];
+
+    const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + 
+      csvRows.map(row => row.map(val => `"${val}"`).join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    const filename = `PAPI_Kostick_${(candidate.fullName || 'Peserta').replace(/\s+/g, '_')}.csv`;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 });
