@@ -3,40 +3,53 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Papikostik Assessment Test</title>
+    <title>Papikostik Personality Assessment</title>
     <meta
       name="description"
-      content="Online Papikostik personality assessment test with 30-minute timer."
+      content="Online Papikostik personality assessment test with real-time timer and progress tracking."
     />
     <link rel="stylesheet" href="style.css" />
+    <!-- Google Font untuk Tipografi Profesional -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
     <div class="page-shell">
+      <!-- HEADER / TOPBAR -->
       <header class="topbar">
-        <div class="brand">Papikostik</div>
-        <span class="tag">Online Personality Assessment</span>
+        <div class="brand">
+          <span class="brand-logo">PAPI</span>
+          <span class="brand-text">Kostik Assessment</span>
+        </div>
+        <span class="tag">Portal Rekrutmen Resmi</span>
       </header>
 
       <main class="container">
-        <section class="hero">
-          <h1>Papikostik Assessment Test</h1>
+        <!-- HERO SECTION -->
+        <section class="hero" id="heroSection">
+          <h1>Asesmen Kepribadian PAPI Kostik</h1>
           <p>
-            Isi data diri Anda terlebih dahulu, lalu jawab 90 pertanyaan berikut. Anda memiliki waktu pengerjaan selama <strong>30 menit</strong>.
+            Silakan lengkapi data diri Anda terlebih dahulu. Setelah tes dimulai, Anda memiliki waktu <strong>30 menit</strong> untuk menyelesaikan 90 pertanyaan.
           </p>
         </section>
 
         <!-- STEP 1: FORM DATA DIRI KANDIDAT -->
         <section id="identitySection" class="identity-section">
-          <h2>Data Diri Peserta</h2>
-          <form id="identityForm">
-            <div class="form-group">
+          <div class="section-header">
+            <h2>Data Diri Peserta</h2>
+            <p>Pastikan informasi yang Anda masukkan sesuai dengan dokumen resmi Anda.</p>
+          </div>
+
+          <form id="identityForm" class="identity-form-grid">
+            <div class="form-group full-width">
               <label for="fullName">Nama Lengkap *</label>
-              <input type="text" id="fullName" name="fullName" placeholder="Masukkan nama lengkap" required />
+              <input type="text" id="fullName" name="fullName" placeholder="Masukkan nama lengkap sesuai KTP" required />
             </div>
 
             <div class="form-group">
               <label for="email">Alamat Email *</label>
-              <input type="email" id="email" name="email" placeholder="contoh@email.com" required />
+              <input type="email" id="email" name="email" placeholder="nama@email.com" required />
             </div>
 
             <div class="form-group">
@@ -55,33 +68,117 @@
 
             <div class="form-group">
               <label for="position">Posisi yang Dilamar *</label>
-              <input type="text" id="position" name="position" placeholder="Contoh: HR Specialist / Staff Admin" required />
+              <input type="text" id="position" name="position" placeholder="Contoh: Talent Acquisition Supervisor" required />
             </div>
 
-            <button type="submit" class="submit-btn">Mulai Tes Psikotes</button>
+            <div class="form-group full-width">
+              <button type="submit" class="primary-btn">Mulai Tes Psikotes</button>
+            </div>
           </form>
         </section>
 
-        <!-- STICKY TIMER BAR (Hidden secara default) -->
-        <div id="timerBar" class="timer-bar hidden">
-          <span>Sisa Waktu Pengerjaan:</span>
-          <span id="timerDisplay" class="timer-display">30:00</span>
+        <!-- STICKY ASSESSMENT HEADER (TIMER & PROGRESS) -->
+        <div id="quizHeader" class="quiz-header sticky-header hidden">
+          <div class="timer-box">
+            <span class="timer-label">Sisa Waktu</span>
+            <span id="timerDisplay" class="timer-display">30:00</span>
+          </div>
+          <div class="progress-box">
+            <div class="progress-info">
+              <span>Kemajuan Tes</span>
+              <span id="progressText">0 / 90 Soal (0%)</span>
+            </div>
+            <div class="progress-track">
+              <div id="progressBar" class="progress-fill" style="width: 0%;"></div>
+            </div>
+          </div>
         </div>
 
         <!-- STEP 2: FORM SOAL PSIKOTES (90 SOAL) -->
         <form id="quizForm" class="quiz-form hidden">
-          <!-- Note: Saat waktu habis, atribut required akan dilepas secara dinamis lewat JS -->
-          
-          <!-- Soal 1 - 90 sama seperti kode sebelumnya -->
-          <div class="question" data-type="A"><p>1. Saya seorang pekerja keras.</p><div class="answers"><label><input type="radio" name="q1" value="1" required /> Sangat Tidak Sesuai</label><label><input type="radio" name="q1" value="2" /> Tidak Sesuai</label><label><input type="radio" name="q1" value="3" /> Ragu-Ragu</label><label><input type="radio" name="q1" value="4" /> Sesuai</label><label><input type="radio" name="q1" value="5" /> Sangat Sesuai</label></div></div>
-          <div class="question" data-type="B"><p>2. Saya tidak gampang murung.</p><div class="answers"><label><input type="radio" name="q2" value="1" required /> Sangat Tidak Sesuai</label><label><input type="radio" name="q2" value="2" /> Tidak Sesuai</label><label><input type="radio" name="q2" value="3" /> Ragu-Ragu</label><label><input type="radio" name="q2" value="4" /> Sesuai</label><label><input type="radio" name="q2" value="5" /> Sangat Sesuai</label></div></div>
-          <!-- ... (Tersambung ke Soal 3 hingga Soal 90) ... -->
+          <div class="question-list">
+            
+            <!-- SOAL 1 -->
+            <div class="question-card" data-question="1">
+              <div class="question-header">
+                <span class="question-badge">Soal 01</span>
+                <p class="question-text">Saya seorang pekerja keras.</p>
+              </div>
+              <div class="answer-grid">
+                <label class="option-card">
+                  <input type="radio" name="q1" value="1" required />
+                  <span class="radio-custom"></span>
+                  <span class="option-label">Sangat Tidak Sesuai</span>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="q1" value="2" />
+                  <span class="radio-custom"></span>
+                  <span class="option-label">Tidak Sesuai</span>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="q1" value="3" />
+                  <span class="radio-custom"></span>
+                  <span class="option-label">Ragu-Ragu</span>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="q1" value="4" />
+                  <span class="radio-custom"></span>
+                  <span class="option-label">Sesuai</span>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="q1" value="5" />
+                  <span class="radio-custom"></span>
+                  <span class="option-label">Sangat Sesuai</span>
+                </label>
+              </div>
+            </div>
 
-          <button type="submit" class="submit-btn">Submit Assessment</button>
+            <!-- SOAL 2 -->
+            <div class="question-card" data-question="2">
+              <div class="question-header">
+                <span class="question-badge">Soal 02</span>
+                <p class="question-text">Saya tidak gampang murung.</p>
+              </div>
+              <div class="answer-grid">
+                <label class="option-card">
+                  <input type="radio" name="q2" value="1" required />
+                  <span class="radio-custom"></span>
+                  <span class="option-label">Sangat Tidak Sesuai</span>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="q2" value="2" />
+                  <span class="radio-custom"></span>
+                  <span class="option-label">Tidak Sesuai</span>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="q2" value="3" />
+                  <span class="radio-custom"></span>
+                  <span class="option-label">Ragu-Ragu</span>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="q2" value="4" />
+                  <span class="radio-custom"></span>
+                  <span class="option-label">Sesuai</span>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="q2" value="5" />
+                  <span class="radio-custom"></span>
+                  <span class="option-label">Sangat Sesuai</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- ... (Gunakan pola komponen .question-card di atas untuk soal 3 - 90) ... -->
+
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-btn submit-btn">Submit & Kirim Jawaban</button>
+          </div>
         </form>
 
         <!-- STEP 3: HASIL ASSESSMEN -->
-        <section id="result" class="result hidden" aria-live="polite"></section>
+        <section id="result" class="result-section hidden" aria-live="polite"></section>
       </main>
     </div>
 
